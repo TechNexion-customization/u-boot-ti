@@ -50,24 +50,26 @@ int board_init(void)
 
 int dram_init(void)
 {
-#ifdef CONFIG_PHYS_64BIT
+/* #ifdef CONFIG_PHYS_64BIT
 	gd->ram_size = 0x100000000;
 #else
 	gd->ram_size = 0x80000000;
-#endif
+#endif */
+
+	gd->ram_size = 0x80000000;
 
 	return 0;
 }
 
 ulong board_get_usable_ram_top(ulong total_size)
 {
-#ifdef CONFIG_PHYS_64BIT
-	/* Limit RAM used by U-Boot to the DDR low region */
-	if (gd->ram_top > 0x100000000)
-		return 0x100000000;
-#endif
+// #ifdef CONFIG_PHYS_64BIT
+// 	/* Limit RAM used by U-Boot to the DDR low region */
+// 	if (gd->ram_top > 0x100000000)
+// 		return 0x100000000;
+// #endif
 
-	return gd->ram_top;
+	return 0x100000000;
 }
 
 int dram_init_banksize(void)
@@ -77,12 +79,12 @@ int dram_init_banksize(void)
 	gd->bd->bi_dram[0].size = 0x80000000;
 	gd->ram_size = 0x80000000;
 
-#ifdef CONFIG_PHYS_64BIT
-	/* Bank 1 declares the memory available in the DDR high region */
-	gd->bd->bi_dram[1].start = CONFIG_SYS_SDRAM_BASE1;
-	gd->bd->bi_dram[1].size = 0x80000000;
-	gd->ram_size = 0x100000000;
-#endif
+// #ifdef CONFIG_PHYS_64BIT
+// 	/* Bank 1 declares the memory available in the DDR high region */
+// 	gd->bd->bi_dram[1].start = CONFIG_SYS_SDRAM_BASE1;
+// 	gd->bd->bi_dram[1].size = 0x80000000;
+// 	gd->ram_size = 0x100000000;
+// #endif
 
 	return 0;
 }
