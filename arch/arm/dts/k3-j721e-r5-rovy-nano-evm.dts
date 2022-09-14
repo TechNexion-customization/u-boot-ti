@@ -6,7 +6,7 @@
 /dts-v1/;
 
 #include "k3-j721e-rovy.dtsi"
-#include "k3-j721e-ddr-evm-lp4-16bit-3200.dtsi"
+#include "k3-j721e-ddr-evm-lp4-16bit-3732.dtsi"
 #include "k3-j721e-ddr.dtsi"
 #include <dt-bindings/phy/phy-cadence.h>
 
