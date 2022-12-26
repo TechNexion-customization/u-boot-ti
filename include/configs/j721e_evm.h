@@ -81,7 +81,7 @@
 		"if test $board_name = J721EX-PM1-SOM; then "		\
 			"setenv name_fdt k3-j721e-proc-board-tps65917.dtb; fi;" \
 		"if test $board_name = j721e; then "			\
-			"setenv name_fdt k3-j721e-rovy-4vm.dtb; fi;" \
+			"setenv name_fdt k3-j721e-rovy-am68-evm.dtb; fi;" \
 		"if test $board_name = j721e-eaik || test $board_name = j721e-sk; then " \
 			"setenv name_fdt k3-j721e-sk.dtb; fi;"	\
 		"setenv fdtfile ${name_fdt}\0"				\
