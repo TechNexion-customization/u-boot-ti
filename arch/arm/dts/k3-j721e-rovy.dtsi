@@ -8,7 +8,7 @@
 #include "k3-j721e.dtsi"
 
 / {
-	model = "ROVY-4VM, Texas Instruments K3 J721E SoC";
+	model = "ROVY-AM68, Texas Instruments K3 J721E SoC";
 
 	memory@80000000 {
 		device_type = "memory";
