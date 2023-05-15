@@ -493,6 +493,75 @@ void configure_serdes_sierra(void)
 	}
 }
 
+#define __REG(x) (*((volatile u32 *)(x)))
+static void set_gpio_iomux_sgmii_reset()
+{
+	/* Configure pinmux of SGMII reset pin as GPIO */
+
+	/* 4xSGMII PHY on SERDES4 */
+	/* (AF27) PRG0_PRU1_GPO12.GPIO0_75 */
+	__REG(0x11C130) = 0x10007;
+}
+
+static void set_gpio_value_sgmii_reset(int value)
+{
+	/* 4xSGMII PHY on SERDES4 */
+	/* (AF27) PRG0_PRU1_GPO12.GPIO0_75 */
+	/* configure GPIO as output*/
+	__REG(0x600060) &=  ~(0x1 << (75%16));
+	/* set value */
+	if (value)
+		__REG(0x600064) |= 0x1 << (75%16);
+	else
+		__REG(0x600064) &= ~(0x1 << (75%16));
+}
+
+static void reset_sgmii_phy_chip(void)
+{
+	printf("----> reset_sgmii_phy_chip \r\n");
+	/* For a complete PHY reset of Realtek RTL8211FS, this pin must be
+	   asserted low for at least 10ms for the internal regulator.
+	   Wait for at least 72ms* (for internal circuits settling time)
+	   before accessing the PHY register. */
+
+	/* 4xSGMII PHY on SERDES4 */
+	/* (AF27) PRG0_PRU1_GPO12.GPIO0_75 */
+	set_gpio_iomux_sgmii_reset();
+	set_gpio_value_sgmii_reset(0);
+	udelay(40000);
+	set_gpio_value_sgmii_reset(1);
+
+	/* wait 100ms for of PHY reset completion */
+	udelay(100000);
+#if 0
+	struct gpio_desc desc = {0};
+	int ret;
+
+	ret = dm_gpio_lookup_name("75", &desc);
+	if (ret) {
+		printf("error getting GPIO lookup name: %d\n", ret);
+		return ret;
+	}
+	ret = dm_gpio_request(&desc, "75");
+	if (ret) {
+		printf("error requesting GPIO: %d\n", ret);
+		goto err_free_gpio;
+	}
+	ret = dm_gpio_set_dir_flags(&desc, GPIOD_IS_OUT);
+	if (ret) {
+		printf("error setting direction flag of GPIO: %d\n", ret);
+		goto err_free_gpio;
+	}
+	ret = dm_gpio_set_value(&desc, 1);
+	if (ret < 0)
+		printf("error getting value of GPIO: %d\n", ret);
+
+err_free_gpio:
+	dm_gpio_free(desc.dev, &desc);
+	return ret;
+#endif
+}
+
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
@@ -504,6 +573,8 @@ int board_late_init(void)
 		if (!board_is_j721e_sk())
 			probe_daughtercards();
 	}
+
+	reset_sgmii_phy_chip();
 
 #if defined(CONFIG_TARGET_J7200_A72_EVM) || defined(CONFIG_TARGET_J7200_R5_EVM)
 	configure_serdes_torrent();
